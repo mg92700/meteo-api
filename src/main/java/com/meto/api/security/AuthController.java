@@ -1,6 +1,7 @@
 package com.meto.api.security;
 
 
+import com.meto.api.configuration.JwtUtil;
 import com.meto.api.model.UserEntity;
 import com.meto.api.repository.UserRepository;
 import org.springframework.http.HttpStatus;

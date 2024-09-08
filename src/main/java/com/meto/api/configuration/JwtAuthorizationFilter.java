@@ -1,4 +1,4 @@
-package com.meto.api.security;
+package com.meto.api.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;

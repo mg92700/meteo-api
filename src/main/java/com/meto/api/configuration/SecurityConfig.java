@@ -1,4 +1,5 @@
-package com.meto.api.security;
+package com.meto.api.configuration;
+import com.meto.api.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

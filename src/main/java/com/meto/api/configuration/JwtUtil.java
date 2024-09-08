@@ -1,4 +1,4 @@
-package com.meto.api.security;
+package com.meto.api.configuration;
 
 
 
