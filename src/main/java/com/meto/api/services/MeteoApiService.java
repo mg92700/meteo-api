@@ -13,7 +13,7 @@ public class MeteoApiService {
 
     private final WebClient webClient;
 
-    private static final String URL_METEO_LOCAL="http://localhost:8081";
+    private static final String URL_METEO_LOCAL="http://localhost:8080";
 
     public MeteoApiService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl(URL_METEO_LOCAL).build();
