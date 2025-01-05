@@ -25,3 +25,6 @@ spring:
     drop-first: true
     change-log: classpath:db/changelog/changelog-master.xml
     default-schema: public
+meteo:
+  api:
+    url: http://spring-boot-app:8082
