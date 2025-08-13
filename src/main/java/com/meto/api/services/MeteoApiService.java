@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class MeteoApiService {
 
-
     private final WebClient webClient;
     public MeteoApiService(WebClient.Builder webClientBuilder, @Value("${meteo.api.url}") String meteoApiUrl) {
         log.info("MeteoApiService URL: {}", meteoApiUrl);

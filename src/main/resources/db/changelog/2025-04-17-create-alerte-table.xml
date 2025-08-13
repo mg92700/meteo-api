@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="2025-04-17-create-alerte-table" author="mouhsin">
+
+        <createTable tableName="alerte">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="seuil_temperature" type="DOUBLE"/>
+            <column name="seuil_humidite" type="DOUBLE"/>
+            <column name="duree_en_jours" type="INT"/>
+            <column name="date_creation" type="DATE"/>
+            <column name="active" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_alerte_user" referencedTableName="user_app" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_alerte_user_id" tableName="alerte">
+            <column name="user_id"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="insert-alert-user-1" author="mouhsin">
+        <insert tableName="alerte">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="seuil_temperature" valueNumeric="30.0"/>
+            <column name="seuil_humidite" valueNumeric="60.0"/>
+            <column name="duree_en_jours" valueNumeric="7"/>
+            <column name="date_creation" valueDate="2025-04-17"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
