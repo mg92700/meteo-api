@@ -2,9 +2,7 @@ package com.meto.api.domain.service;
 
 import com.meto.api.domain.model.Alerte;
 import com.meto.api.domain.model.Meteo;
-import org.springframework.stereotype.Component;
 
-@Component
 public class AlerteDomainService {
 
     public boolean isAlerteDeclenchee(Alerte alerte, Meteo meteo) {

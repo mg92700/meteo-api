@@ -3,11 +3,10 @@ package com.meto.api.infrastructure.adapter.messaging;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meto.api.domain.model.Alerte;
 import com.meto.api.domain.model.Meteo;
-import com.meto.api.application.service.AlerteService;
+import com.meto.api.application.service.AlerteApplicationService;
 import com.meto.api.domain.service.AlerteDomainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jmx.export.notification.NotificationPublisher;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class WeatherKafkaConsumer {
 
-    private final AlerteService alerteService;
+    private final AlerteApplicationService alerteApplicationService;
     private final AlerteDomainService alerteDomainService;
 
 
@@ -28,7 +27,7 @@ public class WeatherKafkaConsumer {
             Meteo meteoData = new ObjectMapper().readValue(message, Meteo.class);
 
             // 1. Récupère les alertes pour la ville
-            List<Alerte> alertes = alerteService.getAlertesActivesParVille(meteoData.getCity());
+            List<Alerte> alertes = alerteApplicationService.getAlertesActivesParVille(meteoData.getCity());
 
             // 2. Filtrage des alertes selon les seuils
             for (Alerte alerte : alertes) {
