@@ -28,3 +28,5 @@ spring:
 meteo:
   api:
     url: http://spring-boot-app:8082
+jwt:
+  secret: mySecureSecretKeyWithAtLeast32CharactersForHS256
