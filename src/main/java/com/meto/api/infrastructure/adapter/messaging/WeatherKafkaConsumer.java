@@ -1,6 +1,7 @@
 package com.meto.api.infrastructure.adapter.messaging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.meto.api.domain.model.Alerte;
 import com.meto.api.domain.model.Meteo;
 import com.meto.api.application.service.AlerteApplicationService;
@@ -19,12 +20,13 @@ public class WeatherKafkaConsumer {
 
     private final AlerteApplicationService alerteApplicationService;
     private final AlerteDomainService alerteDomainService;
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().build();
 
 
     @KafkaListener(topics = "meteo-topic", groupId = "meteo-group")
     public void consume(String message) {
         try {
-            Meteo meteoData = new ObjectMapper().readValue(message, Meteo.class);
+            Meteo meteoData = OBJECT_MAPPER.readValue(message, Meteo.class);
 
             // 1. Récupère les alertes pour la ville
             List<Alerte> alertes = alerteApplicationService.getAlertesActivesParVille(meteoData.getCity());
