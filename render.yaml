@@ -15,5 +15,3 @@ services:
         sync: false
       - key: METEO_SERVICE_PASSWORD_HASH
         sync: false
-      - key: METEO_KAFKA_ENABLED
-        value: "false"

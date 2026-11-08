@@ -98,7 +98,6 @@ Render : New → Blueprint → ce dépôt (`render.yaml`), puis renseigner `METE
 - **Spring Security**: 6.5.3
 - **Spring Data JPA**: 3.5.3
 - **Hibernate**: 6.6.26
-- **Kafka**: 3.3.9
 - **H2 Database**: Runtime
 - **MapStruct**: 1.6.0 (utilité)
 
@@ -129,14 +128,6 @@ Le projet suit la **Clean Architecture** :
 - **Application**: Use Cases et Services applicatifs
 - **Infrastructure**: Adapters, Configuration, Persistance
 
-## 🔄 Flux Kafka
-
-Désactivé par défaut (`METEO_KAFKA_ENABLED=true` pour l'activer). L'application consomme alors les messages du topic `meteo-topic` :
-
-```bash
-Topic: meteo-topic
-Group: meteo-group
-```
 
 ## 📝 Logs
 
