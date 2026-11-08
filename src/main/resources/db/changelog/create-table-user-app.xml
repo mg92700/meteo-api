@@ -25,7 +25,7 @@
     </changeSet>
 
     <!-- Insertion de données (attention à bien respecter la casse des colonnes) -->
-    <changeSet id="insert-user-app-data" author="admin">
+    <changeSet id="insert-user-app-data" author="admin" context="dev">
         <insert tableName="user_app">
             <column name="email" value="admin"/>
             <column name="password" value="$2a$10$Q8bLaPBDvYD6lpOfwWTzFuNQLqFSYMEGC97i64HZr54gtjguKgTc2"/>

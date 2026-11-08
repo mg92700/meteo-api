@@ -8,12 +8,15 @@ import com.meto.api.application.service.AlerteApplicationService;
 import com.meto.api.domain.service.AlerteDomainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/** Alertes à partir des relevés publiés par meteo-scheduling ; actif seulement avec meteo.kafka.enabled=true. */
 @Component
+@ConditionalOnProperty(name = "meteo.kafka.enabled", havingValue = "true")
 @RequiredArgsConstructor
 @Slf4j
 public class WeatherKafkaConsumer {

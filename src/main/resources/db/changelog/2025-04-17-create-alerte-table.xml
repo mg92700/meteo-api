@@ -27,7 +27,7 @@
 
     </changeSet>
 
-    <changeSet id="insert-alert-user-1" author="mouhsin">
+    <changeSet id="insert-alert-user-1" author="mouhsin" context="dev">
         <insert tableName="alerte">
             <column name="user_id" valueNumeric="1"/>
             <column name="seuil_temperature" valueNumeric="30.0"/>

@@ -1,0 +1,16 @@
+# Profil prod (SPRING_PROFILES_ACTIVE=prod, Dockerfile / render.yaml)
+spring:
+  main:
+    banner-mode: "off"
+  liquibase:
+    # Aucun compte de démonstration : seul le compte de service (METEO_SERVICE_*) existe
+    contexts: prod
+
+jwt:
+  # Obligatoire : l'application refuse de démarrer sans JWT_SECRET (32 caractères minimum)
+  secret: ${JWT_SECRET}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: WARN

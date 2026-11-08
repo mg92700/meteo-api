@@ -41,13 +41,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            System.out.println("token : "+accessToken);
             Claims claims = jwtUtil.resolveClaims(request);
 
             if(claims != null && jwtUtil.validateClaims(claims)){
                 String email = claims.getSubject();
                 List<String> roles = claims.get("roles", List.class);
-                System.out.println("email : "+email);
                 List<SimpleGrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());

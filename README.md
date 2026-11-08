@@ -53,10 +53,44 @@ meteo-api/
 GET /meteo-api/current?location=Paris
 ```
 
+### Météo mondiale (v2, source Open-Meteo, gratuite et sans clé)
+```bash
+GET /meteo-api/v2/forecast?city=Rabat&units=metric     # conditions actuelles + 7 jours (units : metric | imperial)
+GET /meteo-api/v2/cities?q=Par&limit=5                 # recherche de ville (autocomplétion)
+```
+Réponses mises en cache (10 min pour la météo, 24 h pour les villes). Erreurs : 400 paramètre invalide,
+401 sans jeton ou jeton expiré, 404 ville introuvable, 503 fournisseur indisponible.
+`weatherCode` suit la codification WMO (0 ciel clair, 1-3 nuageux, 45-48 brouillard, 51-67 pluie, 71-77 neige, 95-99 orage).
+
+La v1 (`/meteo-api/current?location=<INSEE>`) reste servie par meteo-scheduling (Météo-Concept, France).
+
 ### Authentification
 ```bash
-POST /rest/auth/login
+POST /rest/auth/login   {"email": "...", "password": "..."}  →  {"email", "token", "role"}
 ```
+JWT valable 60 minutes, à envoyer en `Authorization: Bearer <token>`.
+
+**Compte de service** (applications clientes, ex. platform-back) : défini par `METEO_SERVICE_EMAIL` et
+`METEO_SERVICE_PASSWORD_HASH` (hash BCrypt, jamais le mot de passe en clair), créé ou mis à jour au démarrage.
+
+```bash
+# Générer le hash d'un mot de passe
+docker run --rm httpd:2.4-alpine htpasswd -bnBC 10 "" 'mon-mot-de-passe' | tr -d ':\n' | sed 's/$2y/$2a/'
+```
+
+Les comptes de démonstration `admin` / `user` n'existent qu'en contexte Liquibase `dev` (par défaut en local) ;
+le profil `prod` ne les crée pas.
+
+## 🐳 Docker et déploiement (Render, gratuit)
+
+```bash
+cp .env.example .env    # renseigner JWT_SECRET et le compte de service
+docker build -t meteo-api .
+docker run -p 8081:8081 --env-file .env meteo-api
+```
+
+Render : New → Blueprint → ce dépôt (`render.yaml`), puis renseigner `METEO_SERVICE_EMAIL` et
+`METEO_SERVICE_PASSWORD_HASH`. `JWT_SECRET` est généré par Render. Santé : `/actuator/health`.
 
 ## 📦 Dépendances principales
 
@@ -97,7 +131,7 @@ Le projet suit la **Clean Architecture** :
 
 ## 🔄 Flux Kafka
 
-L'application consomme des messages Kafka sur le topic `meteo-topic` :
+Désactivé par défaut (`METEO_KAFKA_ENABLED=true` pour l'activer). L'application consomme alors les messages du topic `meteo-topic` :
 
 ```bash
 Topic: meteo-topic

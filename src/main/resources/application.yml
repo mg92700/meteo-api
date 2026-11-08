@@ -1,5 +1,7 @@
 server:
-  port: 8081
+  port: ${PORT:8081}
+  # Derrière le proxy HTTPS de Render
+  forward-headers-strategy: framework
 
 spring:
   datasource:
@@ -25,8 +27,37 @@ spring:
     drop-first: true
     change-log: classpath:db/changelog/changelog-master.xml
     default-schema: public
+    # "dev" ajoute les comptes de démonstration admin / user (mot de passe connu) : jamais en production
+    contexts: ${LIQUIBASE_CONTEXTS:dev}
 meteo:
   api:
-    url: http://spring-boot-app:8082
+    # meteo-scheduling (v1 : /meteo-api/current par code INSEE)
+    url: ${METEO_BATCH_URL:http://spring-boot-app:8082}
+  # Consumer Kafka des alertes (relevés publiés par meteo-scheduling) : désactivé sans broker
+  kafka:
+    enabled: ${METEO_KAFKA_ENABLED:false}
+  # v2 : météo mondiale par nom de ville (Open-Meteo, gratuit, sans clé)
+  open-meteo:
+    forecast-url: ${OPEN_METEO_FORECAST_URL:https://api.open-meteo.com/v1/forecast}
+    geocoding-url: ${OPEN_METEO_GEOCODING_URL:https://geocoding-api.open-meteo.com/v1/search}
+    timeout: 10s
+    forecast-cache-ttl: 10m
+    geocoding-cache-ttl: 24h
+    forecast-days: 7
+  # Compte de service des applications clientes (platform-back) : voir README
+  service-account:
+    email: ${METEO_SERVICE_EMAIL:}
+    password-hash: ${METEO_SERVICE_PASSWORD_HASH:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
 jwt:
-  secret: mySecureSecretKeyWithAtLeast32CharactersForHS256
+  # Développement seulement : en production, JWT_SECRET est obligatoire (application-prod.yml)
+  secret: ${JWT_SECRET:dev-only-secret-change-me-in-production-0123456789}

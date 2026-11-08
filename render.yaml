@@ -1,0 +1,19 @@
+# Déploiement Render (offre gratuite) : New > Blueprint > ce dépôt
+services:
+  - type: web
+    name: meteo-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: JWT_SECRET
+        generateValue: true
+      - key: METEO_SERVICE_EMAIL
+        sync: false
+      - key: METEO_SERVICE_PASSWORD_HASH
+        sync: false
+      - key: METEO_KAFKA_ENABLED
+        value: "false"
