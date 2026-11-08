@@ -41,13 +41,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            System.out.println("token : "+accessToken);
             Claims claims = jwtUtil.resolveClaims(request);
 
             if(claims != null && jwtUtil.validateClaims(claims)){
                 String email = claims.getSubject();
                 List<String> roles = claims.get("roles", List.class);
-                System.out.println("email : "+email);
                 List<SimpleGrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
@@ -57,13 +55,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
 
         }catch (Exception e){
+            // Jeton expiré ou invalide : 401 et arrêt de la chaîne (la requête ne doit pas continuer)
             errorDetails.put("message", "Authentication Error");
-            errorDetails.put("details",e.getMessage());
-            response.setStatus(HttpStatus.FORBIDDEN.value());
+            errorDetails.put("details", "Invalid or expired token");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
             mapper.writeValue(response.getWriter(), errorDetails);
-
+            return;
         }
         filterChain.doFilter(request, response);
     }

@@ -1,0 +1,33 @@
+# Profil prod (SPRING_PROFILES_ACTIVE=prod, Dockerfile / render.yaml)
+spring:
+  main:
+    banner-mode: "off"
+  # Base Supabase mutualisée (pooler en mode session), tables dans le schéma commun platform
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      schema: ${DB_SCHEMA:platform}
+      maximum-pool-size: ${DB_POOL_SIZE:3}
+      minimum-idle: 1
+      # Crée le schéma au besoin : Liquibase ne crée pas de schéma
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS ${DB_SCHEMA:platform}
+  jpa:
+    properties:
+      hibernate:
+        default_schema: ${DB_SCHEMA:platform}
+  liquibase:
+    default-schema: ${DB_SCHEMA:platform}
+    liquibase-schema: ${DB_SCHEMA:platform}
+    # Aucun compte de démonstration : seul le compte de service (METEO_SERVICE_*) existe
+    contexts: prod
+
+jwt:
+  # Obligatoire : l'application refuse de démarrer sans JWT_SECRET (32 caractères minimum)
+  secret: ${JWT_SECRET}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: WARN

@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & tests (Maven)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: mvn verify
+        run: mvn -B -ntp verify
+
+  docker:
+    name: Image Docker et démarrage en profil prod
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construire l'image
+        run: docker build -t meteo-api:ci .
+      - name: Démarrer PostgreSQL et l'API (profil prod, schéma dédié comme sur Supabase)
+        run: |
+          docker network create meteo
+          docker run -d --name pg --network meteo -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=platform postgres:16-alpine
+          for i in $(seq 1 30); do docker exec pg pg_isready -U postgres && break; sleep 1; done
+          HASH=$(docker run --rm httpd:2.4-alpine htpasswd -bnBC 10 "" 'ci-password' | tr -d ':\n' | sed 's/$2y/$2a/')
+          docker run -d --name meteo --network meteo -p 8081:8081 \
+            -e DB_URL=jdbc:postgresql://pg:5432/platform \
+            -e DB_USERNAME=postgres -e DB_PASSWORD=postgres -e DB_SCHEMA=platform \
+            -e JWT_SECRET=ci-secret-ci-secret-ci-secret-ci-secret-0123 \
+            -e METEO_SERVICE_EMAIL=platform@meteo.local \
+            -e METEO_SERVICE_PASSWORD_HASH="$HASH" \
+            meteo-api:ci
+          for i in $(seq 1 60); do curl -fsS http://localhost:8081/actuator/health && break; sleep 2; done
+          curl -fsS http://localhost:8081/actuator/health | grep -q UP
+      - name: Sécurité et compte de service
+        run: |
+          code() { curl -s -o /tmp/body -w '%{http_code}' "$@"; }
+          expect() { echo "HTTP $1 attendu $2 : $3"; test "$1" = "$2"; }
+          expect "$(code 'http://localhost:8081/meteo-api/v2/forecast?city=Paris')" 401 "sans jeton"
+          expect "$(code -H 'Authorization: Bearer forged' 'http://localhost:8081/meteo-api/v2/forecast?city=Paris')" 401 "jeton forgé"
+          expect "$(code -X POST http://localhost:8081/rest/auth/login -H 'Content-Type: application/json' -d '{"email":"admin","password":"password"}')" 400 "aucun compte de démonstration en prod"
+          expect "$(code -X POST http://localhost:8081/rest/auth/login -H 'Content-Type: application/json' -d '{"email":"platform@meteo.local","password":"ci-password"}')" 200 "compte de service"
+          TOKEN=$(jq -r .token /tmp/body)
+          echo "Tables du schéma platform :"
+          docker exec pg psql -U postgres -d platform -tAc "select string_agg(table_name, ',' order by table_name) from information_schema.tables where table_schema = 'platform'" | tee /tmp/tables
+          grep -q user_app /tmp/tables && grep -q alerte /tmp/tables
+          test "$(docker exec pg psql -U postgres -d platform -tAc "select count(*) from information_schema.tables where table_schema = 'public'")" = "0"
+          expect "$(code -H "Authorization: Bearer $TOKEN" 'http://localhost:8081/meteo-api/v2/cities?q=Ra')" 200 "recherche de ville (réseau)"
+      - name: Logs en cas d'échec
+        if: failure()
+        run: docker logs meteo
