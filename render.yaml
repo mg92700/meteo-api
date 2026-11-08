@@ -11,7 +11,7 @@ services:
         value: prod
       - key: JWT_SECRET
         generateValue: true
-      # Base Supabase mutualisée (Connect > Session pooler), schéma meteo_api
+      # Base Supabase mutualisée (Connect > Session pooler), schéma platform
       - key: DB_URL
         sync: false
       - key: DB_USERNAME
@@ -19,7 +19,7 @@ services:
       - key: DB_PASSWORD
         sync: false
       - key: DB_SCHEMA
-        value: meteo_api
+        value: platform
       - key: METEO_SERVICE_EMAIL
         sync: false
       - key: METEO_SERVICE_PASSWORD_HASH
