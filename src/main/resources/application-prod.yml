@@ -2,7 +2,24 @@
 spring:
   main:
     banner-mode: "off"
+  # Base Supabase mutualisée (pooler en mode session), tables dans un schéma dédié (meteo_api)
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      schema: ${DB_SCHEMA:meteo_api}
+      maximum-pool-size: ${DB_POOL_SIZE:3}
+      minimum-idle: 1
+      # Crée le schéma au besoin : Liquibase ne crée pas de schéma
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS ${DB_SCHEMA:meteo_api}
+  jpa:
+    properties:
+      hibernate:
+        default_schema: ${DB_SCHEMA:meteo_api}
   liquibase:
+    default-schema: ${DB_SCHEMA:meteo_api}
+    liquibase-schema: ${DB_SCHEMA:meteo_api}
     # Aucun compte de démonstration : seul le compte de service (METEO_SERVICE_*) existe
     contexts: prod
 

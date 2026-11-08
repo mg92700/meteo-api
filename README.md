@@ -136,6 +136,9 @@ Les logs sont configurés via Logback. Consultez:
 
 ## 🗄️ Base de données
 
+- **Production** : PostgreSQL de la base Supabase mutualisée, tables dans le schéma `meteo_api`
+  (créé au démarrage s'il n'existe pas). Variables `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `DB_SCHEMA`.
+
 - **H2** en développement
 - **Liquibase** pour les migrations
 - Migrations dans `src/main/resources/db/changelog/`

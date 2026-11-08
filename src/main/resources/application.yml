@@ -4,27 +4,23 @@ server:
   forward-headers-strategy: framework
 
 spring:
+  # Local et tests : H2 en mémoire. Production : PostgreSQL Supabase (application-prod.yml)
   datasource:
     username: sa
     url: jdbc:h2:mem:meteoapi
-    driverClassName: org.h2.Driver
     password:
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    open-in-view: false
 
-  batch:
-    jdbc:
-      initialize-schema: always
-    job:
-      enabled: false
   main:
     allow-bean-definition-overriding: true
     banner:
       location: classpath:banner.txt
   liquibase:
     enabled: true
-    drop-first: true
+    # Jamais drop-first : la base de production est partagée avec d'autres projets
+    drop-first: false
     change-log: classpath:db/changelog/changelog-master.xml
     default-schema: public
     # "dev" ajoute les comptes de démonstration admin / user (mot de passe connu) : jamais en production
