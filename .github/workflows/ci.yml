@@ -40,8 +40,8 @@ jobs:
           for i in $(seq 1 30); do docker exec pg pg_isready -U postgres && break; sleep 1; done
           HASH=$(docker run --rm httpd:2.4-alpine htpasswd -bnBC 10 "" 'ci-password' | tr -d ':\n' | sed 's/$2y/$2a/')
           docker run -d --name meteo --network meteo -p 8081:8081 \
-            -e DB_URL=jdbc:postgresql://pg:5432/platform \
-            -e DB_USERNAME=postgres -e DB_PASSWORD=postgres -e DB_SCHEMA=platform \
+            -e SPRING_DATASOURCE_URL=jdbc:postgresql://pg:5432/platform \
+            -e SPRING_DATASOURCE_USERNAME=postgres -e SPRING_DATASOURCE_PASSWORD=postgres -e DB_SCHEMA=platform \
             -e JWT_SECRET=ci-secret-ci-secret-ci-secret-ci-secret-0123 \
             -e METEO_SERVICE_EMAIL=platform@meteo.local \
             -e METEO_SERVICE_PASSWORD_HASH="$HASH" \

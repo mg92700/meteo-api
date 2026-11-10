@@ -4,9 +4,9 @@ spring:
     banner-mode: "off"
   # Base Supabase mutualisée (pooler en mode session), tables dans le schéma commun platform
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     hikari:
       schema: ${DB_SCHEMA:platform}
       maximum-pool-size: ${DB_POOL_SIZE:3}

@@ -12,11 +12,11 @@ services:
       - key: JWT_SECRET
         generateValue: true
       # Base Supabase mutualisée (Connect > Session pooler), schéma platform
-      - key: DB_URL
+      - key: SPRING_DATASOURCE_URL
         sync: false
-      - key: DB_USERNAME
+      - key: SPRING_DATASOURCE_USERNAME
         sync: false
-      - key: DB_PASSWORD
+      - key: SPRING_DATASOURCE_PASSWORD
         sync: false
       - key: DB_SCHEMA
         value: platform
