@@ -71,4 +71,26 @@ class ForecastControllerIntegrationTest {
                 .expectBody()
                 .jsonPath("$[0].countryCode").isEqualTo("FR");
     }
+
+    @Test
+    void forecastPost() {
+        CityDto cormeilles = new CityDto("Cormeilles-en-Parisis", "Île-de-France", "France", "FR", 48.97, 2.2, "Europe/Paris");
+        when(forecastPort.forecast("Cormeilles-en-Parisis", Units.METRIC)).thenReturn(new ForecastDto(cormeilles, Units.METRIC,
+                new ForecastDto.Current(LocalDateTime.parse("2026-11-10T11:00"), 9.5, 7.8, 80, 12.0, 3, true),
+                List.of(new ForecastDto.Day(LocalDate.parse("2026-11-10"), 6.0, 11.0, 3, 20))));
+
+        webTestClient.post().uri("/meteo-api/v2/forecast")
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .bodyValue("{\"city\":\" Cormeilles-en-Parisis \"}")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.city.name").isEqualTo("Cormeilles-en-Parisis")
+                .jsonPath("$.current.temperature").isEqualTo(9.5);
+
+        webTestClient.post().uri("/meteo-api/v2/forecast")
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .bodyValue("{\"city\":\"\"}")
+                .exchange().expectStatus().isBadRequest();
+    }
 }

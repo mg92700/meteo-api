@@ -1,0 +1,18 @@
+# Profil local : SPRING_PROFILES_ACTIVE=local (stack Docker locale, voir ../local-infra)
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/meteo
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    contexts: dev      # comptes de démonstration admin / user
+
+meteo:
+  service-account:
+    email: platform@meteo.local
+    # BCrypt de "local-service"
+    password-hash: '$2a$10$tfzWzvNIO8pMlbD8ADZy2.WSenZoiTzikUOzBN5GqNAoFYFqQEboK'

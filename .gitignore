@@ -36,3 +36,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+# Variables d environnement locales (secrets) : jamais commitees
+.env
+.env.*
+!.env.example
