@@ -3,7 +3,7 @@
 #   docker build -t meteo-api .
 #   docker run -p 8081:8081 --env-file .env meteo-api
 # ══════════════════════════════════════════════════════════
-FROM maven:3.9-eclipse-temurin-21 AS build
+FROM maven:3.9-eclipse-temurin-26 AS build
 WORKDIR /workspace
 COPY pom.xml .
 RUN --mount=type=cache,target=/root/.m2 mvn -B -ntp dependency:go-offline -q || true
